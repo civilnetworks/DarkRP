@@ -1,9 +1,10 @@
 "darkrp"
 {
 	"base"		"sandbox"
-    "title"  "MilitaryRP"
+    "title"  "SCP-RP"
     "version"   "2.7.0"
     "menusystem"	"1"
+	"category"	"rp"
 
     "author_name"   "FPtje Falco et al."
     "author_email"  ""
