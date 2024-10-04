@@ -42,7 +42,7 @@ end
 Draw the results to the screen
 ---------------------------------------------------------------------------]]
 local function drawChatReceivers()
-    -- >> Disabled on request #586
+    return
     -- if not receivers then return end
 
     -- local fontHeight = draw.GetFontHeight("DarkRPHUD1")
@@ -105,7 +105,7 @@ local function startFind()
 
     currentConfig = receiverConfigs[""]
     hook.Add("Think", "DarkRP_chatRecipients", chatGetRecipients)
-    -- hook.Add("HUDPaint", "DarkRP_DrawChatReceivers", drawChatReceivers)
+    hook.Add("HUDPaint", "DarkRP_DrawChatReceivers", drawChatReceivers)
 end
 hook.Add("StartChat", "DarkRP_StartFindChatReceivers", startFind)
 
@@ -114,7 +114,7 @@ Called when the player stops typing
 ---------------------------------------------------------------------------]]
 local function stopFind()
     hook.Remove("Think", "DarkRP_chatRecipients")
-    -- hook.Remove("HUDPaint", "DarkRP_DrawChatReceivers")
+    hook.Remove("HUDPaint", "DarkRP_DrawChatReceivers")
 end
 hook.Add("FinishChat", "DarkRP_StopFindChatReceivers", stopFind)
 
@@ -194,7 +194,7 @@ local function startFindVoice(ply)
 
     currentConfig = receiverConfigs["speak"]
     hook.Add("Think", "DarkRP_chatRecipients", chatGetRecipients)
-    -- hook.Add("HUDPaint", "DarkRP_DrawChatReceivers", drawChatReceivers)
+    hook.Add("HUDPaint", "DarkRP_DrawChatReceivers", drawChatReceivers)
 end
 hook.Add("PlayerStartVoice", "DarkRP_VoiceChatReceiverFinder", startFindVoice)
 
