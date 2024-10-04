@@ -42,35 +42,34 @@ end
 Draw the results to the screen
 ---------------------------------------------------------------------------]]
 local function drawChatReceivers()
-    return
-    -- if not receivers then return end
+    if not receivers then return end
 
-    -- local fontHeight = draw.GetFontHeight("DarkRPHUD1")
-    -- local x, y = chat.GetChatBoxPos()
-    -- y = y - fontHeight - 4
+    local fontHeight = draw.GetFontHeight("DarkRPHUD1")
+    local x, y = chat.GetChatBoxPos()
+    y = y - fontHeight - 4
 
-    -- local receiversCount = #receivers
-    -- -- No one hears you
-    -- if receiversCount == 0 then
-    --     draw.WordBox(2, x, y, DarkRP.getPhrase("hear_noone", currentConfig.text), "DarkRPHUD1", Color(0,0,0,160), Color(255,0,0,255))
-    --     return
-    -- -- Everyone hears you
-    -- elseif receiversCount == player.GetCount() - 1 then
-    --     draw.WordBox(2, x, y, DarkRP.getPhrase("hear_everyone"), "DarkRPHUD1", Color(0,0,0,160), Color(0,255,0,255))
-    --     return
-    -- end
+    local receiversCount = #receivers
+    -- No one hears you
+    if receiversCount == 0 then
+        draw.WordBox(2, x, y, DarkRP.getPhrase("hear_noone", currentConfig.text), "DarkRPHUD1", Color(0,0,0,160), Color(255,0,0,255))
+        return
+    -- Everyone hears you
+    elseif receiversCount == player.GetCount() - 1 then
+        draw.WordBox(2, x, y, DarkRP.getPhrase("hear_everyone"), "DarkRPHUD1", Color(0,0,0,160), Color(0,255,0,255))
+        return
+    end
 
-    -- draw.WordBox(2, x, y - (receiversCount * (fontHeight + 4)), DarkRP.getPhrase("hear_certain_persons", currentConfig.text), "DarkRPHUD1", Color(0,0,0,160), Color(0,255,0,255))
-    -- for i = 1, receiversCount, 1 do
-    --     if not IsValid(receivers[i]) then
-    --         receivers[i] = receivers[#receivers]
-    --         receivers[#receivers] = nil
-    --         continue
-    --     end
+    draw.WordBox(2, x, y - (receiversCount * (fontHeight + 4)), DarkRP.getPhrase("hear_certain_persons", currentConfig.text), "DarkRPHUD1", Color(0,0,0,160), Color(0,255,0,255))
+    for i = 1, receiversCount, 1 do
+        if not IsValid(receivers[i]) then
+            receivers[i] = receivers[#receivers]
+            receivers[#receivers] = nil
+            continue
+        end
 
-    --     local nick = (VWAR and VWAR:NickRP(receivers[i])) or receivers[i]:Nick()
-    --     draw.WordBox(2, x, y - (i - 1) * (fontHeight + 4), nick, "DarkRPHUD1", Color(0, 0, 0, 160), color_white)
-    -- end
+        local nick = (VWAR and VWAR:NickRP(receivers[i])) or receivers[i]:Nick()
+        draw.WordBox(2, x, y - (i - 1) * (fontHeight + 4), nick, "DarkRPHUD1", Color(0, 0, 0, 160), color_white)
+    end
 end
 
 --[[---------------------------------------------------------------------------
@@ -138,19 +137,19 @@ Default chat receievers. If you want to add your own ones, don't add them to thi
 -- Load after the custom languages have been loaded
 local function loadChatReceivers()
     -- Default talk chat receiver has no prefix
-    DarkRP.addChatReceiver("", DarkRP.getPhrase("talk"), function(ply)
-        if GAMEMODE.Config.alltalk then return nil end
+    -- DarkRP.addChatReceiver("", DarkRP.getPhrase("talk"), function(ply)
+    --     if GAMEMODE.Config.alltalk then return nil end
 
-        return LocalPlayer():GetPos():DistToSqr(ply:GetPos()) <
-            GAMEMODE.Config.talkDistance * GAMEMODE.Config.talkDistance
-    end)
+    --     return LocalPlayer():GetPos():DistToSqr(ply:GetPos()) <
+    --         GAMEMODE.Config.talkDistance * GAMEMODE.Config.talkDistance
+    -- end)
 
     DarkRP.addChatReceiver("/ooc", DarkRP.getPhrase("speak_in_ooc"), function(ply) return true end)
     DarkRP.addChatReceiver("//", DarkRP.getPhrase("speak_in_ooc"), function(ply) return true end)
     DarkRP.addChatReceiver("/a", DarkRP.getPhrase("speak_in_ooc"), function(ply) return true end)
     DarkRP.addChatReceiver("/w", DarkRP.getPhrase("whisper"), function(ply) return LocalPlayer():GetPos():DistToSqr(ply:GetPos()) < GAMEMODE.Config.whisperDistance * GAMEMODE.Config.whisperDistance end)
-    DarkRP.addChatReceiver("/y", DarkRP.getPhrase("yell"), function(ply) return LocalPlayer():GetPos():DistToSqr(ply:GetPos()) < GAMEMODE.Config.yellDistance * GAMEMODE.Config.yellDistance end)
-    DarkRP.addChatReceiver("/me", DarkRP.getPhrase("perform_your_action"), function(ply) return LocalPlayer():GetPos():DistToSqr(ply:GetPos()) < GAMEMODE.Config.meDistance * GAMEMODE.Config.meDistance end)
+    -- DarkRP.addChatReceiver("/y", DarkRP.getPhrase("yell"), function(ply) return LocalPlayer():GetPos():DistToSqr(ply:GetPos()) < GAMEMODE.Config.yellDistance * GAMEMODE.Config.yellDistance end)
+    -- DarkRP.addChatReceiver("/me", DarkRP.getPhrase("perform_your_action"), function(ply) return LocalPlayer():GetPos():DistToSqr(ply:GetPos()) < GAMEMODE.Config.meDistance * GAMEMODE.Config.meDistance end)
     DarkRP.addChatReceiver("/g", DarkRP.getPhrase("talk_to_your_group"), function(ply)
         for _, func in pairs(GAMEMODE.DarkRPGroupChats) do
             if func(LocalPlayer()) and func(ply) then
@@ -174,12 +173,12 @@ local function loadChatReceivers()
         Voice chat receivers
         ---------------------------------------------------------------------------]]
     local voiceDistance = GM.Config.voiceDistance * GM.Config.voiceDistance
-    DarkRP.addChatReceiver("speak", DarkRP.getPhrase("speak"), function(ply)
-        if not LocalPlayer().DRPIsTalking then return nil end
-        if LocalPlayer():GetPos():DistToSqr(ply:GetPos()) > voiceDistance then return false end
+    -- DarkRP.addChatReceiver("speak", DarkRP.getPhrase("speak"), function(ply)
+    --     if not LocalPlayer().DRPIsTalking then return nil end
+    --     if LocalPlayer():GetPos():DistToSqr(ply:GetPos()) > voiceDistance then return false end
 
-        return not GAMEMODE.Config.dynamicvoice or ply:isInRoom()
-    end)
+    --     return not GAMEMODE.Config.dynamicvoice or ply:isInRoom()
+    -- end)
 end
 hook.Add("loadCustomDarkRPItems", "loadChatListeners", loadChatReceivers)
 
