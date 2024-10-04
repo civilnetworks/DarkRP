@@ -42,34 +42,35 @@ end
 Draw the results to the screen
 ---------------------------------------------------------------------------]]
 local function drawChatReceivers()
-    if not receivers then return end
+    -- >> Disabled on request #586
+    -- if not receivers then return end
 
-    local fontHeight = draw.GetFontHeight("DarkRPHUD1")
-    local x, y = chat.GetChatBoxPos()
-    y = y - fontHeight - 4
+    -- local fontHeight = draw.GetFontHeight("DarkRPHUD1")
+    -- local x, y = chat.GetChatBoxPos()
+    -- y = y - fontHeight - 4
 
-    local receiversCount = #receivers
-    -- No one hears you
-    if receiversCount == 0 then
-        draw.WordBox(2, x, y, DarkRP.getPhrase("hear_noone", currentConfig.text), "DarkRPHUD1", Color(0,0,0,160), Color(255,0,0,255))
-        return
-    -- Everyone hears you
-    elseif receiversCount == player.GetCount() - 1 then
-        draw.WordBox(2, x, y, DarkRP.getPhrase("hear_everyone"), "DarkRPHUD1", Color(0,0,0,160), Color(0,255,0,255))
-        return
-    end
+    -- local receiversCount = #receivers
+    -- -- No one hears you
+    -- if receiversCount == 0 then
+    --     draw.WordBox(2, x, y, DarkRP.getPhrase("hear_noone", currentConfig.text), "DarkRPHUD1", Color(0,0,0,160), Color(255,0,0,255))
+    --     return
+    -- -- Everyone hears you
+    -- elseif receiversCount == player.GetCount() - 1 then
+    --     draw.WordBox(2, x, y, DarkRP.getPhrase("hear_everyone"), "DarkRPHUD1", Color(0,0,0,160), Color(0,255,0,255))
+    --     return
+    -- end
 
-    draw.WordBox(2, x, y - (receiversCount * (fontHeight + 4)), DarkRP.getPhrase("hear_certain_persons", currentConfig.text), "DarkRPHUD1", Color(0,0,0,160), Color(0,255,0,255))
-    for i = 1, receiversCount, 1 do
-        if not IsValid(receivers[i]) then
-            receivers[i] = receivers[#receivers]
-            receivers[#receivers] = nil
-            continue
-        end
+    -- draw.WordBox(2, x, y - (receiversCount * (fontHeight + 4)), DarkRP.getPhrase("hear_certain_persons", currentConfig.text), "DarkRPHUD1", Color(0,0,0,160), Color(0,255,0,255))
+    -- for i = 1, receiversCount, 1 do
+    --     if not IsValid(receivers[i]) then
+    --         receivers[i] = receivers[#receivers]
+    --         receivers[#receivers] = nil
+    --         continue
+    --     end
 
-        local nick = (VWAR and VWAR:NickRP(receivers[i])) or receivers[i]:Nick()
-        draw.WordBox(2, x, y - (i - 1) * (fontHeight + 4), nick, "DarkRPHUD1", Color(0, 0, 0, 160), color_white)
-    end
+    --     local nick = (VWAR and VWAR:NickRP(receivers[i])) or receivers[i]:Nick()
+    --     draw.WordBox(2, x, y - (i - 1) * (fontHeight + 4), nick, "DarkRPHUD1", Color(0, 0, 0, 160), color_white)
+    -- end
 end
 
 --[[---------------------------------------------------------------------------
