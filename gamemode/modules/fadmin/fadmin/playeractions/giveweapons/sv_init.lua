@@ -17,10 +17,39 @@ local function GiveWeapon(ply, cmd, args)
     for _, target in pairs(targets) do
         if IsValid(target) then
             local wep = target:Give(weapon)
-            wep.VINVOneTimeUse = true
+            if (IsValid(wep)) then
+                wep.VINVOneTimeUse = true
+            end
         end
     end
     FAdmin.Messages.ActionMessage(ply, targets, "You gave %s a " .. weapon, "%s gave you a " .. weapon, "Gave %s a " .. weapon)
+    FAdmin.Messages.FireNotification("giveweapon", ply, targets, {weapon})
+
+    return true, targets, weapon
+end
+
+local function GiveHolsterableWeapon(ply, cmd, args)
+    if not FAdmin.Access.PlayerHasPrivilege(ply, "giveweapon") then FAdmin.Messages.SendMessage(ply, 5, "No access!") return false end
+    if not args[2] then return false end
+
+    local targets = FAdmin.FindPlayer(args[1])
+    if not targets or #targets == 1 and not IsValid(targets[1]) then
+        FAdmin.Messages.SendMessage(ply, 1, "Player not found")
+        return false
+    end
+
+    local weapon = weapons.GetStored(args[2])
+    if table.HasValue(FAdmin.HL2Guns, args[2]) then weapon = args[2]
+    elseif weapon and weapon.ClassName then weapon = weapon.ClassName end
+
+    if not weapon then return false end
+
+    for _, target in pairs(targets) do
+        if IsValid(target) then
+            target:Give(weapon)
+        end
+    end
+    FAdmin.Messages.ActionMessage(ply, targets, "You gave %s a HOLSTERABLE " .. weapon, "%s gave you a HOLSTERABLE " .. weapon, "Gave %s a HOLSTERABLE " .. weapon)
     FAdmin.Messages.FireNotification("giveweapon", ply, targets, {weapon})
 
     return true, targets, weapon
@@ -52,6 +81,7 @@ end
 
 FAdmin.StartHooks["GiveWeapons"] = function()
     FAdmin.Commands.AddCommand("giveweapon", GiveWeapon)
+    FAdmin.Commands.AddCommand("giveholsterableweapon", GiveHolsterableWeapon)
     FAdmin.Commands.AddCommand("giveammo", GiveAmmo)
 
     FAdmin.Access.AddPrivilege("giveweapon", 3)

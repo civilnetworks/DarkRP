@@ -22,6 +22,7 @@ end
 FAdmin.StartHooks["GiveWeapons"] = function()
     FAdmin.Access.AddPrivilege("giveweapon", 2)
     FAdmin.Commands.AddCommand("giveweapon", nil, "<Player>", "<weapon>")
+    FAdmin.Commands.AddCommand("giveholsterableweapon", nil, "<Player>", "<weapon>")
 
     FAdmin.ScoreBoard.Player:AddActionButton("Give weapon(s)", "fadmin/icons/weapon", Color(255, 130, 0, 255),
 
