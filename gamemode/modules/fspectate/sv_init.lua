@@ -38,10 +38,6 @@ local function clearInvalidSpectators()
     end
 end
 
-local function ShouldPrint(ply)
-    return ply:AtLeastRanked("Moderator")
-end
-
 local function startSpectating(ply, target)
     local canSpectate = hook.Call("FSpectate_canSpectate", nil, ply, target)
     if canSpectate == false then return end
@@ -66,11 +62,9 @@ local function startSpectating(ply, target)
     ply:ChatPrint("You are now spectating " .. targetText)
     hook.Call("FSpectate_start", nil, ply, target)
 
-    if(ShouldPrint(ply))then
-        for k, v in pairs(player.GetAll())do
-            if(v:AtLeastRanked("Senior Admin"))then
-                v:PrintMessage(HUD_PRINTTALK,"[SPECTATE] "..ply:Nick().." spectated "..targetText)
-            end
+    for k, v in player.Iterator() do
+        if (v:AtLeastRanked("Senior Admin")) then
+            v:PrintMessage(HUD_PRINTTALK, "[SPECTATE] " .. ply:Nick() .. " spectated " .. targetText)
         end
     end
 end
