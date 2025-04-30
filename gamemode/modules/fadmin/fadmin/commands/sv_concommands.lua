@@ -16,6 +16,15 @@ local function concommand_executed(ply, cmd, args)
         end
     end
     table.ClearKeys(args2)
+
+    local prevent, err = hook.Call("FAdmin_PreventCommand", nil, ply, name, args2)
+    if (prevent == true) then
+        if (err) then
+            FAdmin.Messages.SendMessage(ply, 1, err)
+        end
+        return
+    end
+
     local res = {FAdmin.Commands.List[name].callback(ply, name, args2)}
     hook.Call("FAdmin_OnCommandExecuted", nil, ply, name, args2, res)
 end
