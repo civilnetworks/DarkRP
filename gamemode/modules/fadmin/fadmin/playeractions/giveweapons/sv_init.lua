@@ -20,7 +20,7 @@ local function GiveWeapon(ply, cmd, args)
             if (IsValid(wep)) then
                 wep.VINVOneTimeUse = true
 
-                hook.Run("FAdminGiveWeapon", target, weapon, ply)
+                hook.Run("FAdminGiveWeapon", target, wep, ply)
             end
         end
     end
