@@ -19,6 +19,8 @@ local function GiveWeapon(ply, cmd, args)
             local wep = target:Give(weapon)
             if (IsValid(wep)) then
                 wep.VINVOneTimeUse = true
+
+                hook.Run("FAdminGiveWeapon", target, weapon, ply)
             end
         end
     end

@@ -827,7 +827,11 @@ function GM:PlayerLoadout(ply)
     local jobTable = ply:getJobTable()
 
     for _, v in pairs(jobTable.weapons or {}) do
-        ply:Give(v)
+        local wep = ply:Give(v)
+
+        if (IsValid(wep)) then
+            hook.Run("DarkRPLoadoutGiveWeapon", ply, wep)
+        end
     end
 
     if jobTable.PlayerLoadout then
@@ -845,7 +849,11 @@ function GM:PlayerLoadout(ply)
     end
 
     for _, v in pairs(self.Config.DefaultWeapons) do
-        ply:Give(v)
+        local wep = ply:Give(v)
+        
+        if (IsValid(wep)) then
+            hook.Run("DarkRPLoadoutGiveWeapon", ply, wep)
+        end
     end
 
     CAMI.PlayerHasAccess(ply, "DarkRP_GetAdminWeapons", function(access)
