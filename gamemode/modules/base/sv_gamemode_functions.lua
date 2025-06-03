@@ -314,7 +314,9 @@ local threed = GM.Config.voice3D
 local vrad = GM.Config.voiceradius
 local dynv = GM.Config.dynamicvoice
 local deadv = GM.Config.deadvoice
+
 local DrpCanHear = {}
+GM.DrpCanHear = DrpCanHear
 
 -- proxy function to take load from PlayerCanHearPlayersVoice, which is called a quadratic amount of times per tick,
 -- causing a lagfest when there are many players
@@ -324,7 +326,7 @@ local function calcPlyCanHearPlayerVoice(listener)
     if not IsValid(listener) then return end
     DrpCanHear[listener] = DrpCanHear[listener] or {}
     local shootPos = listener:GetShootPos()
-    for _, talker in ipairs(player.GetAll()) do
+    for _, talker in player.Iterator() do
         if (not talker.isAlive) then
             DrpCanHear[listener][talker] = false
             continue
@@ -350,11 +352,18 @@ hook.Add("PlayerInitialSpawn", "DarkRPCanHearVoice", function(ply)
     InitPlayerVoice(ply)
 end)
 hook.Add("PlayerDisconnected", "DarkRPCanHearVoice", function(ply)
-    if not DrpCanHear[ply] then return end
-    for _, v in ipairs(player.GetAll()) do
-        if not DrpCanHear[v] then continue end
+    if DrpCanHear[ply] then
+        DrpCanHear[ply] = nil
+    end
+
+    for _, v in player.Iterator() do
+        if not DrpCanHear[v] then
+            continue
+        end
+
         DrpCanHear[v][ply] = nil
     end
+
     timer.Remove(ply:UserID() .. "DarkRPCanHearPlayersVoice")
 end)
 
