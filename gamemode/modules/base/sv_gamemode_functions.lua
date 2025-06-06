@@ -755,6 +755,10 @@ local function enableBabyGod(ply)
 end
 
 function GM:PlayerSpawn(ply)
+    if (CNLIB) then
+        CNLIB.Profiler.EnterScope("GM:PlayerSpawn")
+    end
+
     if not ply.DarkRPInitialised then
         DarkRP.errorNoHalt(
             string.format("DarkRP was unable to introduce player \"%s\" to the game. Expect further errors and shit generally being fucked!",
@@ -805,33 +809,75 @@ function GM:PlayerSpawn(ply)
 
     player_manager.SetPlayerClass(ply, jobTable.playerClass or "player_darkrp")
 
+    if (CNLIB) then
+        CNLIB.Profiler.EnterScope("GM:PlayerSpawn.SetPlayerClassVars")
+    end
+
     ply:applyPlayerClassVars(true)
 
     player_manager.RunClass(ply, "Spawn")
 
+    if (CNLIB) then
+        CNLIB.Profiler.ExitScope("GM:PlayerSpawn.SetPlayerClassVars")
+    end
+
     hook.Call("PlayerLoadout", self, ply)
     hook.Call("PlayerSetModel", self, ply)
+
+    if (CNLIB) then
+        CNLIB.Profiler.EnterScope("GM:PlayerSpawn.SelectSpawn")
+    end
 
     local ent, pos = hook.Call("PlayerSelectSpawn", self, ply)
     ply:SetPos(pos or ent:GetPos())
 
+    if (CNLIB) then
+        CNLIB.Profiler.ExitScope("GM:PlayerSpawn.SelectSpawn")
+    end
+
     if jobTable.PlayerSpawn then
+        if (CNLIB) then
+            CNLIB.Profiler.EnterScope("GM:PlayerSpawn.JobSpawn")
+        end
+
         jobTable.PlayerSpawn(ply)
+
+        if (CNLIB) then
+            CNLIB.Profiler.ExitScope("GM:PlayerSpawn.JobSpawn")
+        end
+    end
+
+    if (CNLIB) then
+        CNLIB.Profiler.ExitScope("GM:PlayerSpawn")
     end
 
     DarkRP.log(ply:Nick() .. " (" .. ply:SteamID() .. ") spawned")
 end
 
 function GM:PlayerLoadout(ply)
+    if (CNLIB) then
+        CNLIB.Profiler.EnterScope("GM:PlayerLoadout")
+    end
+
     self.Sandbox.PlayerLoadout(self, ply)
 
-    if ply:isArrested() then return end
+    if ply:isArrested() then
+        if CNLIB then
+            CNLIB.Profiler.ExitScope("GM:PlayerLoadout")
+        end
+
+        return
+    end
 
     ply.RPLicenseSpawn = true
     timer.Simple(1, function()
         if not IsValid(ply) then return end
         ply.RPLicenseSpawn = false
     end)
+
+    if (CNLIB) then
+        CNLIB.Profiler.EnterScope("GM:PlayerLoadout.JobLoadout")
+    end
 
     local jobTable = ply:getJobTable()
 
@@ -847,6 +893,12 @@ function GM:PlayerLoadout(ply)
         local val = jobTable.PlayerLoadout(ply)
         if val == true then
             ply:SwitchToDefaultWeapon()
+
+            if (CNLIB) then
+                CNLIB.Profiler.ExitScope("GM:PlayerLoadout.JobLoadout")
+                CNLIB.Profiler.EnterScope("GM:PlayerLoadout.DefaultWeapons")
+            end
+
             return
         end
     end
@@ -857,12 +909,22 @@ function GM:PlayerLoadout(ply)
         end
     end
 
+    if (CNLIB) then
+        CNLIB.Profiler.ExitScope("GM:PlayerLoadout.JobLoadout")
+        CNLIB.Profiler.EnterScope("GM:PlayerLoadout.DefaultWeapons")
+    end
+
     for _, v in pairs(self.Config.DefaultWeapons) do
         local wep = ply:Give(v)
         
         if (IsValid(wep)) then
             hook.Run("DarkRPLoadoutGiveWeapon", ply, wep)
         end
+    end
+
+    if (CNLIB) then
+        CNLIB.Profiler.ExitScope("GM:PlayerLoadout.DefaultWeapons")
+        CNLIB.Profiler.EnterScope("GM:PlayerLoadout.AdminWeapons")
     end
 
     CAMI.PlayerHasAccess(ply, "DarkRP_GetAdminWeapons", function(access)
@@ -881,7 +943,15 @@ function GM:PlayerLoadout(ply)
         ply:Give("weaponchecker")
     end)
 
+    if (CNLIB) then
+        CNLIB.Profiler.ExitScope("GM:PlayerLoadout.AdminWeapons")
+    end
+
     ply:SwitchToDefaultWeapon()
+
+    if (CNLIB) then
+        CNLIB.Profiler.ExitScope("GM:PlayerLoadout")
+    end
 end
 
 --[[---------------------------------------------------------------------------
