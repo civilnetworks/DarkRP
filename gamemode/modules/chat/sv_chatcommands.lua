@@ -140,42 +140,6 @@ local function MayorBroadcast(ply, args)
 end
 DarkRP.defineChatCommand("broadcast", MayorBroadcast, 1.5)
 
-local function SetRadioChannel(ply,args)
-    local channel = DarkRP.toInt(args)
-    if channel == nil or channel < 0 or channel > 100 then
-        DarkRP.notify(ply, 1, 4, DarkRP.getPhrase("invalid_x", DarkRP.getPhrase("arguments"), "0<" .. DarkRP.getPhrase("channel") .. "<100"))
-        return ""
-    end
-    DarkRP.notify(ply, 2, 4, DarkRP.getPhrase("channel_set_to_x", args))
-    ply.RadioChannel = channel
-    return ""
-end
-DarkRP.defineChatCommand("channel", SetRadioChannel)
-
-local function SayThroughRadio(ply,args)
-    if not ply.RadioChannel then ply.RadioChannel = 1 end
-    local radioChannel = ply.RadioChannel
-    if not args or args == "" then
-        DarkRP.notify(ply, 1, 4, DarkRP.getPhrase("invalid_x", DarkRP.getPhrase("arguments"), ""))
-        return ""
-    end
-    local DoSay = function(text)
-        if text == "" then
-            DarkRP.notify(ply, 1, 4, DarkRP.getPhrase("invalid_x", DarkRP.getPhrase("arguments"), ""))
-            return
-        end
-        local col = Color(180, 180, 180, 255)
-        local phrase = DarkRP.getPhrase("radio_x", radioChannel)
-        for _, v in ipairs(player.GetAll()) do
-            if v.RadioChannel == radioChannel then
-                DarkRP.talkToPerson(v, col, phrase, col, text, ply)
-            end
-        end
-    end
-    return args, DoSay
-end
-DarkRP.defineChatCommand("radio", SayThroughRadio, 1.5)
-
 local function GroupMsg(ply, args)
     local DoSay = function(text)
         if text == "" then
