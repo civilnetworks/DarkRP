@@ -88,7 +88,12 @@ local function lockUnlockAnimation(ply, snd)
     ply:AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_GMOD_GESTURE_ITEM_PLACE, true)
 end
 
-local function doKnock(ply, sound)
+local function doKnock(ply, sound, ent)
+    local prevent = hook.Run("PreventPlayerKeysKnock", ply, sound, ent)
+    if (prevent) then
+        return
+    end
+
     ply:EmitSound(sound, 100, math.random(90, 110))
 
     umsg.Start("anim_keys")
@@ -120,7 +125,7 @@ function SWEP:PrimaryAttack()
     elseif ent:IsVehicle() or ent.isWacAircraft then
         DarkRP.notify(Owner, 1, 3, DarkRP.getPhrase("do_not_own_ent"))
     else
-        doKnock(Owner, "physics/wood/wood_crate_impact_hard2.wav")
+        doKnock(Owner, "physics/wood/wood_crate_impact_hard2.wav", ent)
     end
 end
 
@@ -145,7 +150,7 @@ function SWEP:SecondaryAttack()
     elseif ent:IsVehicle() or ent.isWacAircraft then
         DarkRP.notify(Owner, 1, 3, DarkRP.getPhrase("do_not_own_ent"))
     else
-        doKnock(Owner, "physics/wood/wood_crate_impact_hard3.wav")
+        doKnock(Owner, "physics/wood/wood_crate_impact_hard3.wav", ent)
     end
 end
 
