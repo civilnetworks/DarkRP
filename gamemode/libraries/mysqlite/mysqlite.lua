@@ -268,6 +268,22 @@ function queueQuery(sqlText, callback, errorCallback)
     query(sqlText, callback, errorCallback)
 end
 
+local function SQLQuery(sqlText, callback, errorCallback, queryValue)
+    local query = SQL:query(sqlText)
+
+    function query:onError(E)
+        local supp = errorCallback and errorCallback(E, sqlText)
+        if not supp then error(E .. " (" .. sqlText .. ")") end
+    end
+
+    function query:onSuccess(data)
+        local res = queryValue and data and data[1] and arbitraryTableValue(data[1]) or not queryValue and data or nil
+        if callback then callback(res, query:lastInsert()) end
+    end
+
+    query:start()
+end
+
 local function msOOQuery(sqlText, callback, errorCallback, queryValue)
     local queryObject = databaseObject:query(sqlText)
     local data
@@ -331,12 +347,12 @@ local function SQLiteQuery(sqlText, callback, errorCallback, queryValue)
 end
 
 function query(sqlText, callback, errorCallback)
-    local qFunc = (CONNECTED_TO_MYSQL and ((mysqlOO and msOOQuery) or (TMySQL and tmsqlQuery))) or SQLiteQuery
+    local qFunc = (CONNECTED_TO_MYSQL and ((SQL and SQLConnected and SQLQuery) or (mysqlOO and msOOQuery) or (TMySQL and tmsqlQuery))) or SQLiteQuery
     return qFunc(sqlText, callback, errorCallback, false)
 end
 
 function queryValue(sqlText, callback, errorCallback)
-    local qFunc = (CONNECTED_TO_MYSQL and ((mysqlOO and msOOQuery) or (TMySQL and tmsqlQuery))) or SQLiteQuery
+    local qFunc = (CONNECTED_TO_MYSQL and ((SQL and SQLConnected and SQLQuery) or (mysqlOO and msOOQuery) or (TMySQL and tmsqlQuery))) or SQLiteQuery
     return qFunc(sqlText, callback, errorCallback, true)
 end
 

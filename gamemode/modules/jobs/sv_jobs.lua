@@ -205,6 +205,7 @@ function meta:updateJob(job)
             timer.Remove(timerid)
             return
         end
+        
         self:payDay()
     end)
 end
