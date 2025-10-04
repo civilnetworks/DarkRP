@@ -269,7 +269,7 @@ function queueQuery(sqlText, callback, errorCallback)
 end
 
 local function SQLQuery(sqlText, callback, errorCallback, queryValue)
-    local query = SQL:query(sqlText)
+    local query = _G.SQL:query(sqlText)
 
     function query:onError(E)
         local supp = errorCallback and errorCallback(E, sqlText)
@@ -347,12 +347,12 @@ local function SQLiteQuery(sqlText, callback, errorCallback, queryValue)
 end
 
 function query(sqlText, callback, errorCallback)
-    local qFunc = (CONNECTED_TO_MYSQL and ((SQL and SQLConnected and SQLQuery) or (mysqlOO and msOOQuery) or (TMySQL and tmsqlQuery))) or SQLiteQuery
+    local qFunc = (CONNECTED_TO_MYSQL and ((_G.SQL and _G.SQLConnected and SQLQuery) or (mysqlOO and msOOQuery) or (TMySQL and tmsqlQuery))) or SQLiteQuery
     return qFunc(sqlText, callback, errorCallback, false)
 end
 
 function queryValue(sqlText, callback, errorCallback)
-    local qFunc = (CONNECTED_TO_MYSQL and ((SQL and SQLConnected and SQLQuery) or (mysqlOO and msOOQuery) or (TMySQL and tmsqlQuery))) or SQLiteQuery
+    local qFunc = (CONNECTED_TO_MYSQL and ((_G.SQL and _G.SQLConnected and SQLQuery) or (mysqlOO and msOOQuery) or (TMySQL and tmsqlQuery))) or SQLiteQuery
     return qFunc(sqlText, callback, errorCallback, true)
 end
 
