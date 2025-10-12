@@ -8,7 +8,7 @@ Variables
 local receivers
 local currentChatText = {}
 local receiverConfigs = {}
-local currentConfig = {text = "", hearFunc = fn.Id} -- Default config is not loaded yet
+local currentConfig = {text = "", hearFunc = fn.Id, showTrueNames = false} -- Default config is not loaded yet
 
 --[[---------------------------------------------------------------------------
 addChatReceiver
@@ -21,10 +21,11 @@ hearFunc: a function(ply, splitText) that decides whether this player can or can
            false if the player cannot
            nil if you want to prevent the text from showing up temporarily
 ---------------------------------------------------------------------------]]
-function DarkRP.addChatReceiver(prefix, text, hearFunc)
+function DarkRP.addChatReceiver(prefix, text, hearFunc, showTrueNames)
     receiverConfigs[prefix] = {
         text = text,
-        hearFunc = hearFunc
+        hearFunc = hearFunc,
+        showTrueNames = showTrueNames or false,
     }
 end
 
@@ -67,7 +68,7 @@ local function drawChatReceivers()
             continue
         end
 
-        local nick = (VWAR and VWAR:NickRP(receivers[i])) or receivers[i]:Nick()
+        local nick = (VWAR and (currentConfig.showTrueNames and VWAR:Nick(receivers[i]) or VWAR:NickRP(receivers[i]))) or receivers[i]:Nick()
         draw.WordBox(2, x, y - (i - 1) * (fontHeight + 4), nick, "DarkRPHUD1", Color(0, 0, 0, 160), color_white)
     end
 end
@@ -144,9 +145,9 @@ local function loadChatReceivers()
             GAMEMODE.Config.talkDistance * GAMEMODE.Config.talkDistance
     end)
 
-    DarkRP.addChatReceiver("/ooc", DarkRP.getPhrase("speak_in_ooc"), function(ply) return true end)
-    DarkRP.addChatReceiver("//", DarkRP.getPhrase("speak_in_ooc"), function(ply) return true end)
-    DarkRP.addChatReceiver("/a", DarkRP.getPhrase("speak_in_ooc"), function(ply) return true end)
+    DarkRP.addChatReceiver("/ooc", DarkRP.getPhrase("speak_in_ooc"), function(ply) return true end, true)
+    DarkRP.addChatReceiver("//", DarkRP.getPhrase("speak_in_ooc"), function(ply) return true end, true)
+    DarkRP.addChatReceiver("/a", DarkRP.getPhrase("speak_in_ooc"), function(ply) return true end, true)
     DarkRP.addChatReceiver("/w", DarkRP.getPhrase("whisper"), function(ply) return LocalPlayer():GetPos():DistToSqr(ply:GetPos()) < GAMEMODE.Config.whisperDistance * GAMEMODE.Config.whisperDistance end)
     DarkRP.addChatReceiver("/y", DarkRP.getPhrase("yell"), function(ply) return LocalPlayer():GetPos():DistToSqr(ply:GetPos()) < GAMEMODE.Config.yellDistance * GAMEMODE.Config.yellDistance end)
     DarkRP.addChatReceiver("/me", DarkRP.getPhrase("perform_your_action"), function(ply) return LocalPlayer():GetPos():DistToSqr(ply:GetPos()) < GAMEMODE.Config.meDistance * GAMEMODE.Config.meDistance end)
@@ -160,14 +161,14 @@ local function loadChatReceivers()
     end)
 
 
-    -- DarkRP.addChatReceiver("/pm", "PM", function(ply, text)
-    --     if not isstring(text[2]) then return false end
-    --     text[2] = string.lower(tostring(text[2]))
+    DarkRP.addChatReceiver("/pm", "PM", function(ply, text)
+        if not isstring(text[2]) then return false end
+        text[2] = string.lower(tostring(text[2]))
 
-    --     return string.find(string.lower(ply:Nick()), text[2], 1, true) ~= nil or
-    --         string.find(string.lower(ply:SteamName()), text[2], 1, true) ~= nil or
-    --         string.lower(ply:SteamID()) == text[2]
-    -- end)
+        return string.find(string.lower(ply:Nick()), text[2], 1, true) ~= nil or
+            string.find(string.lower(ply:SteamName()), text[2], 1, true) ~= nil or
+            string.lower(ply:SteamID()) == text[2]
+    end, true)
 
     --[[---------------------------------------------------------------------------
         Voice chat receivers
