@@ -374,18 +374,28 @@ function DarkRP.retrievePlayerData(ply, callback, failed, attempts, err)
 end
 
 function DarkRP.createPlayerData(ply, name, wallet, salary)
+    print("[DarkRP] Creating playerdata for " .. ply:Nick() .. " (" .. ply:SteamID() .. ")")
+
     MySQLite.query([[REPLACE INTO darkrp_player VALUES(]] ..
             ply:SteamID64() .. [[, ]] ..
             MySQLite.SQLStr(name)  .. [[, ]] ..
             salary  .. [[, ]] ..
-            wallet .. ");")
+            wallet .. ");", function(result, lastInsertedID)
+                print("[DarkRP] Created playerdata for " .. ply:Nick() .. " (" .. ply:SteamID() .. ")")
+            end, function(err)
+                print("[DarkRP] Failed to create playerdata for " .. ply:Nick() .. " (" .. ply:SteamID() .. "): " .. tostring(err))
+            end)
 
     -- Backwards compatibility
     MySQLite.query([[REPLACE INTO darkrp_player VALUES(]] ..
             ply:UniqueID() .. [[, ]] ..
             MySQLite.SQLStr(name)  .. [[, ]] ..
             salary  .. [[, ]] ..
-            wallet .. ");")
+            wallet .. ");", function(result, lastInsertedID)
+                print("[DarkRP] Created playerdata for " .. ply:Nick() .. " (" .. ply:SteamID() .. ") on deprecated UniqueID")
+            end, function(err)
+                print("[DarkRP] Failed to create playerdata for " .. ply:Nick() .. " (" .. ply:SteamID() .. ") on deprecated UniqueID: " .. tostring(err))
+            end)
 end
 
 function DarkRP.storeMoney(ply, amount)
