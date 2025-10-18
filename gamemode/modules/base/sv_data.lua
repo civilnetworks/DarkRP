@@ -497,7 +497,7 @@ function meta:restorePlayerData()
 
         self:setDarkRPVar("rpname", info.rpname)
 
-        if not data then
+        if not data or not data[1] then
             info = hook.Call("onPlayerFirstJoined", nil, self, info) or info
             DarkRP.createPlayerData(self, info.rpname, info.wallet, info.salary)
         end
