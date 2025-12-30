@@ -568,9 +568,30 @@ function DarkRP.storeTeamDoorOwnability(ent)
     if not ent:CreatedByMap() then return end
     local map = string.lower(game.GetMap())
 
-    MySQLite.query("DELETE FROM darkrp_doorjobs WHERE idx = " .. ent:doorIndex() .. " AND map = " .. MySQLite.SQLStr(map) .. ";")
-    for k in pairs(ent:getKeysDoorTeams() or {}) do
-        MySQLite.query("INSERT INTO darkrp_doorjobs VALUES(" .. ent:doorIndex() .. ", " .. MySQLite.SQLStr(map) .. ", " .. MySQLite.SQLStr(RPExtraTeams[k].command) .. ");")
+    if (SQL) then
+        local transaction = SQL:createTransaction()
+
+        local doorIndex = ent:doorIndex()
+
+        local deleteQuery = SQL:prepare("DELETE FROM darkrp_doorjobs WHERE idx = ? AND map = ?;")
+        deleteQuery:setNumber(1, doorIndex)
+        deleteQuery:setString(2, map)
+        transaction:addQuery(deleteQuery)
+
+        for k in pairs(ent:getKeysDoorTeams() or {}) do
+            local insertQuery = SQL:prepare("INSERT INTO darkrp_doorjobs VALUES(?, ?, ?);")
+            insertQuery:setNumber(1, doorIndex)
+            insertQuery:setString(2, map)
+            insertQuery:setString(3, RPExtraTeams[k].command)
+            transaction:addQuery(insertQuery)
+        end
+
+        transaction:start()
+    else
+        MySQLite.query("DELETE FROM darkrp_doorjobs WHERE idx = " .. ent:doorIndex() .. " AND map = " .. MySQLite.SQLStr(map) .. ";")
+        for k in pairs(ent:getKeysDoorTeams() or {}) do
+            MySQLite.query("INSERT INTO darkrp_doorjobs VALUES(" .. ent:doorIndex() .. ", " .. MySQLite.SQLStr(map) .. ", " .. MySQLite.SQLStr(RPExtraTeams[k].command) .. ");")
+        end
     end
 end
 
