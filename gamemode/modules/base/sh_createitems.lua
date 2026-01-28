@@ -1,5 +1,6 @@
 local plyMeta = FindMetaTable("Player")
 
+local EntityCooldowns = {}
 -----------------------------------------------------------
 -- Job commands --
 -----------------------------------------------------------
@@ -327,6 +328,18 @@ local function addEntityCommands(tblEnt)
             return ""
         end
 
+        if (tblEnt.cooldown) then
+            local steamID = ply:SteamID()
+            local key = steamID .. "_" .. tblEnt.ent
+            local lastPurchase = EntityCooldowns[key]
+
+            if (lastPurchase and (CurTime() - lastPurchase) < tblEnt.cooldown) then
+                local remaining = math.ceil((tblEnt.cooldown - (CurTime() - lastPurchase)) / 60)
+                DarkRP.notify(ply, 1, 4, "You must wait " .. remaining .. " more minute(s) before buying this again!")
+                return ""
+            end
+        end
+
         if tblEnt.customCheck and not tblEnt.customCheck(ply) then
             local message = isfunction(tblEnt.CustomCheckFailMsg) and tblEnt.CustomCheckFailMsg(ply, tblEnt) or
                 tblEnt.CustomCheckFailMsg or
@@ -371,6 +384,11 @@ local function addEntityCommands(tblEnt)
         ent.DarkRPItem = tblEnt
 
         hook.Call("playerBoughtCustomEntity", nil, ply, tblEnt, ent, cost)
+
+        if (tblEnt.cooldown) then
+            local key = ply:SteamID() .. "_" .. tblEnt.ent
+            EntityCooldowns[key] = CurTime()
+        end
 
         if cost == 0 then
             DarkRP.notify(ply, 0, 4, DarkRP.getPhrase("you_got_yourself", tblEnt.name))
