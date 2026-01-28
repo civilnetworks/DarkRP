@@ -1,6 +1,7 @@
 local plyMeta = FindMetaTable("Player")
 
 local EntityCooldowns = {}
+
 -----------------------------------------------------------
 -- Job commands --
 -----------------------------------------------------------
@@ -329,14 +330,18 @@ local function addEntityCommands(tblEnt)
         end
 
         if (tblEnt.cooldown) then
-            local steamID = ply:SteamID()
-            local key = steamID .. "_" .. tblEnt.ent
-            local lastPurchase = EntityCooldowns[key]
+            local cooldown = isfunction(tblEnt.cooldown) and tblEnt.cooldown(ply) or tblEnt.cooldown
 
-            if (lastPurchase and (CurTime() - lastPurchase) < tblEnt.cooldown) then
-                local remaining = math.ceil((tblEnt.cooldown - (CurTime() - lastPurchase)) / 60)
-                DarkRP.notify(ply, 1, 4, "You must wait " .. remaining .. " more minute(s) before buying this again!")
-                return ""
+            if (cooldown and cooldown > 0) then
+                local steamID = ply:SteamID()
+                local key = steamID .. "_" .. tblEnt.ent
+                local lastPurchase = EntityCooldowns[key]
+
+                if (lastPurchase and (CurTime() - lastPurchase) < cooldown) then
+                    local remaining = math.ceil((cooldown - (CurTime() - lastPurchase)) / 60)
+                    DarkRP.notify(ply, 1, 4, "You must wait " .. remaining .. " more minute(s) before buying this again!")
+                    return ""
+                end
             end
         end
 
@@ -386,8 +391,12 @@ local function addEntityCommands(tblEnt)
         hook.Call("playerBoughtCustomEntity", nil, ply, tblEnt, ent, cost)
 
         if (tblEnt.cooldown) then
-            local key = ply:SteamID() .. "_" .. tblEnt.ent
-            EntityCooldowns[key] = CurTime()
+            local cooldown = isfunction(tblEnt.cooldown) and tblEnt.cooldown(ply) or tblEnt.cooldown
+
+            if (cooldown and cooldown > 0) then
+                local key = ply:SteamID() .. "_" .. tblEnt.ent
+                EntityCooldowns[key] = CurTime()
+            end
         end
 
         if cost == 0 then
