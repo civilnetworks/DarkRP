@@ -62,6 +62,11 @@ function FAdmin.ScoreBoard.DrawScoreBoard()
 end
 
 function FAdmin.ScoreBoard.ShowScoreBoard()
+    local prevent = hook.Run("FAdmin_ScoreBoardShow")
+    if (prevent) then
+        return
+    end
+
     FAdmin.ScoreBoard.Visible = true
     FAdmin.ScoreBoard.DontGoBack = input.IsMouseDown(MOUSE_4) or input.IsKeyDown(KEY_BACKSPACE)
 
@@ -122,6 +127,11 @@ end)
 
 function FAdmin.ScoreBoard.HideScoreBoard()
     if not FAdmin.GlobalSetting.FAdmin then return end
+
+    if (not FAdmin.ScoreBoard.Visible) then
+        return
+    end
+
     FAdmin.ScoreBoard.Visible = false
     CloseDermaMenus()
 
