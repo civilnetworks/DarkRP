@@ -74,6 +74,10 @@ end
 function GM:teamChanged(before, after)
 end
 
+function GM:OnAchievementAchieved(ply, achId)
+
+end
+
 local function OnChangedTeam(um)
     local oldTeam, newTeam = um:ReadShort(), um:ReadShort()
     hook.Call("teamChanged", GAMEMODE, oldTeam, newTeam) -- backwards compatibility
